@@ -1,0 +1,75 @@
+\section{이론적 배경}
+
+\subsection{정보 엔트로피}
+%https://en.wikipedia.org/wiki/Entropy_(information_theory)
+%https://en.wikipedia.org/wiki/Nat_(unit)
+%https://en.wikipedia.org/wiki/Differential_entropy
+
+정보 엔트로피란 정보이론의 개념으로 송신자가 보낸 메시지를 채널이 특정한 방식으로 변경하고 수신자는 변경된 메시지 수신하게 되는데 이 메시지에 포함된 정보의 기댓값이 정보 엔트로피이다. 임의의 변수 $x$와 $p:\mathbb{X} \rightarrow[0,1]$을 만족하는 $\mathbb{X}$가 존재한다고 하자. 이떄 정보 엔트로피 $H(x)$는 다음과 같이 정의된다 \cite{Wikipedia_Entropy}.
+
+\begin{equation}
+    H(X):=-\sum_{x \in \mathbb{X}} p(x) \ln{p(x)} = \mathbb{E}[-\ln{p(X)}]
+    \label{H definition}
+\end{equation}
+
+
+위 식은 연속적인 분포로 확장이 가능하며 이때 정보 엔트로피는 아래 식을 따르게 된다 \cite{Wikipedia_Differential_Entropy}.
+
+\begin{equation}
+    H(X) = -\mathbb{E}[\ln{f}] = -\int_{\mathbb{X}} f(x) \ln{(f(x))}dx
+    \label{H definition - continuous}
+\end{equation}
+
+정보 엔트로피의 정의에서는 log 함수의 밑을 다양하게 쓸 수 있으며 위와 같이 $e$인 경우에는 단위가 $\mathrm{nat}$이 된다 \cite{Wikipedia_Nats}. 밑이 2인 경우에는 단위가 정보의 일반적인 단위인 $\mathrm{bit}$가 된다. 이는 다음 예시를 통해 알 수 있다.
+
+\begin{quote}
+    예) $0 ~\sim~ 2^{n}-1$을 이진수로 표현한 $n$자리 이진 비트 체계를 생각하자. 즉, $p_{i}$는 $n$자리 이진 비트 체계에서 나타난 수가 10진수에서 $i$일 확률이며 모두 $1/2^{n}$으로 동일하다. 이 경우 $H(p)$는 다음과 같다.
+    \begin{equation*}
+        H(p) = - \sum_{i} p_{i} \ln{p_{i}} = - 2^{n} \times \frac{1}{2^{n}} \ln{2^{n}} = n \ln{2}
+    \end{equation*}
+    즉, $n$자리 이진 비트체계는 $n\mathrm{~nat}$의 정보를 갖고 있으며 $n\mathrm{~bit}$의 정보를 갖고 있다고 볼 수 있다.
+\end{quote}
+
+
+% 1. Shannon Entropy가 무엇인가
+
+% 2. Shannon Entropy의 여러 특성
+
+% 3. 연속적인 엔트로피의 정의
+
+\subsection{Kullback–Leibler divergence}
+
+Kullback-Leibler divergence는 상대적 엔트로피라고도 부르며 두 확률분포 $P,~Q$의 정보 엔트로피의 차이를 나타내는 척도이다. 주로 한 분포에 다른 분포를 근사하여 적용하는 경우에 사용한다 \cite{Wikipedia_Kullback_Liebler_Divergence}.
+
+\begin{equation}
+    D_{KL} (P||Q) = \sum_{x\in \mathcal{X}} P(x) \ln{\frac{P(x)}{Q(x)}} =  \sum_{x \in \mathcal{X}} P(x)\ln{\frac{1}{Q(x)}} - \sum_{x\in \mathcal{X}} P(x) \ln{\frac{1}{P(x)}} = H(P, Q) - H(P)
+    \label{D_KL definition}
+\end{equation}
+
+%https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence
+
+이를 연속 확장시키면 다음과 같이 쓸 수 있다.
+
+\begin{equation}
+    D_{KL} (P||Q) = \int_{-\infty}^{\infty}{p(x) \ln{\frac{p(x)}{q(x)}} dx}
+    \label{D_KL definition - continuous}
+\end{equation}
+
+Chain rule에 의하면 식 \ref{D_KL definition - continuous}\은 $Q$에 대한 $P$의 상대적인 엔트로피임을 알 수 있다. $D_{KL} (P||Q) \geq 0$이며 등호는 $P=Q$인 경우에 성립한다. 두 확률분포가 유사할수록 0에 가까워지지만 이것이 하나의 척도로 사용될 수는 없다 (대칭성이 없으며 삼각부등식을 만족하지 않고 그래서 발산(divergence)이라고 불린다). 값이 0 이상이라는 성질은 cross entropy(식 \ref{D_KL definition})\와의 관계에서 Jensen 부등식에 의해 증명할 수 있다. 본 탐구에서도 분포 사이의 차이를 구할 때 사용하며 이하 KL이라 명명한다.
+
+\subsection{라그랑주 승수법}
+
+라그랑주 승수법(Largange Multiplier Method)는 특정함수의 최댓값 혹은 최솟값을 제약조건이 주어진 경우에 탐색할 때 사용하는 기법이며 교과서 14.8에도 서술되어 있다 \cite{Hass_Heil_Weir_Thomas_2020}. 최대, 최소를 찾고자 하는 함수를 $f(x_{i}; ~i)$라 하고 주어진 제약조건을 $g(x_{i}; ~i) = 0$이라 하자 (단, $f(x_{i}; i~)$는 $f(x_{1}, ~x_{2}, ~\cdots, ~x_{n})$을 의미하며 이를 간단히 $f(\Vec{x})$로 표기하도록 한다). 그렇다면 상수 $\lambda$ (Lagrange Multiplier)를 \이용하여 목적함수 $L$을 다음과 같이 정의할 수 있다.
+\begin{equation}
+    L = f(\Vec{x}) - \lambda g(\Vec{x}) ~( = f(\Vec{x}) )
+    \label{Lagrange Multiplier - L}
+\end{equation}
+
+다변수 함수의 미적분 이론에 의하여 식 \ref{Lagrange Multiplier - L}이 최대 혹은 최소가 되기 위한 조건은 다음과 같다.
+\begin{equation}
+    \frac{\partial L}{\partial x_{i}} = 0,~\frac{\partial L}{\partial \lambda} = 0
+    \label{Lagrange Multiplier - Eq}
+\end{equation}
+이는 stationary point (미분계수가 0인 점)을 찾는 과정이며 그 해 중에 목적함수의 최댓값을 갖는 점이 존재한다. 뒤의 식은 조건이 1개인 경우 자명하지만 조건이 2개 이상이고 서로 독립적이지 못한 경우에 제약조건으로 의미가 있다. 라그랑주 승수법은 최적해 탐색 방법 중 하나이며 식 \ref{Lagrange Multiplier - Eq}을 풀어서 구한 $\lambda$를 토대로 실질적인 함숫값을 구할 수 있다.
+
+%https://en.wikipedia.org/wiki/Lagrange_multiplier
